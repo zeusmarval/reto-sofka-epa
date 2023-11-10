@@ -1,17 +1,29 @@
-package com.zama.reto_sofka.service;
+package com.zama.reto_sofka.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "Productos")
-public class Producto {
+@Document(collection = "Product")
+public class Product {
 
     @Id
     private String id;
     private String productName;
     private int quantity;
 
-    // Constructor, getters y setters
+    public Product(String productName, int quantity) {
+        this.productName = productName;
+        this.quantity = quantity;
+    }
+
+    public Product(String id, String productName, int quantity) {
+        this.id = id;
+        this.productName = productName;
+        this.quantity = quantity;
+    }
+
+    public Product() {
+    }
 
     public String getId() {
         return id;
@@ -34,6 +46,10 @@ public class Producto {
     }
 
     public void setQuantity(int quantity) {
-        this.quantity = quantity;
+        if (quantity >= 0) {
+            this.quantity = quantity;
+        } else {
+            throw new IllegalArgumentException("The quantity cannot be negative");
+        }
     }
 }

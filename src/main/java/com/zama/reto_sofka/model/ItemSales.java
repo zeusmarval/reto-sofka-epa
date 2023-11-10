@@ -1,19 +1,16 @@
-package com.zama.reto_sofka.service;
+package com.zama.reto_sofka.model;
 
-
-public class ItemFactura {
-    private String productName;
+public class ItemSales {
+    private String name;
     private int quantity;
     private double price;
 
-    // Constructor, getters y setters
-
-    public String getProductName() {
-        return productName;
+    public String getName() {
+        return name;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getQuantity() {
