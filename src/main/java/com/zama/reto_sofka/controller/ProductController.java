@@ -14,13 +14,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/product")
-public class ProductoController {
+public class ProductController {
 
     private final ProductService productService;
     private final MongoTemplate mongoTemplate;
 
     @Autowired
-    public ProductoController(MongoTemplate mongoTemplate, ProductService productService) {
+    public ProductController(MongoTemplate mongoTemplate, ProductService productService) {
         this.mongoTemplate = mongoTemplate;
         this.productService = productService;
     }

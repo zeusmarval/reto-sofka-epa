@@ -4,6 +4,8 @@ import com.zama.reto_sofka.model.ItemSales;
 import com.zama.reto_sofka.model.Sales;
 import com.zama.reto_sofka.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -22,6 +24,10 @@ public class SaleService implements Runnable {
         this.mongoTemplate = mongoTemplate;
     }
 
+    public Sales registerSales(Sales sales) {
+        return mongoTemplate.save(sales, "Sales");
+    }
+
     public void generateProducts() {
         List<Sales> _sales = mongoTemplate.findAll(Sales.class, "Sales");
 
@@ -33,8 +39,8 @@ public class SaleService implements Runnable {
                 int quantitySold = item.getQuantity();
 
                 if (productsByName.containsKey(productName)) {
-                    int cantidadActual = productsByName.get(productName);
-                    productsByName.put(productName, cantidadActual + quantitySold);
+                    int currentQuantity = productsByName.get(productName);
+                    productsByName.put(productName, currentQuantity + quantitySold);
                 } else {
                     productsByName.put(productName, quantitySold);
                 }
@@ -55,7 +61,6 @@ public class SaleService implements Runnable {
         }
     }
 
-
     public void calculateTotalInvoices() {
         List<Sales> _sales = mongoTemplate.findAll(Sales.class, "Sales");
 
@@ -71,6 +76,11 @@ public class SaleService implements Runnable {
         }
     }
 
+    public List<Sales> getPaginatedInvoices(int page, int size) {
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        Query query = new Query().with(pageable);
+        return mongoTemplate.find(query, Sales.class, "Sales");
+    }
 
     @Override
     public void run() {
