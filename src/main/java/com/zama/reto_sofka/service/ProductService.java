@@ -32,6 +32,40 @@ public class ProductService {
         this.mongoTemplate = mongoTemplate;
     }
 
+    public static void generateProducts(MongoTemplate mongoTemplate) {
+        List<Sales> _sales = mongoTemplate.findAll(Sales.class, "Sales");
+
+        Map<String, Integer> productsByName = new HashMap<>();
+
+        for (Sales sale : _sales) {
+            for (ItemSales item : sale.getItems()) {
+                String productName = item.getName();
+                int quantitySold = item.getQuantity();
+
+                if (productsByName.containsKey(productName)) {
+                    int currentQuantity = productsByName.get(productName);
+                    productsByName.put(productName, currentQuantity + quantitySold);
+                } else {
+                    productsByName.put(productName, quantitySold);
+                }
+            }
+        }
+
+        for (Map.Entry<String, Integer> entry : productsByName.entrySet()) {
+            String productName = entry.getKey();
+            int quantitySold = entry.getValue();
+
+            Product product = mongoTemplate.findOne(Query.query(Criteria.where("productName").is(productName)), Product.class, "Product");
+            if (product != null) {
+                product.setQuantity(quantitySold);
+            } else {
+                product = new Product(productName, quantitySold);
+            }
+            mongoTemplate.save(product, "Product");
+        }
+    }
+
+
     public List<SoldProducts> mostSelledProducts(int limit, String startDate, String endDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date fechaInicioISO;
