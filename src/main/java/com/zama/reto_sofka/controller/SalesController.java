@@ -4,6 +4,11 @@ import com.zama.reto_sofka.model.Customer;
 import com.zama.reto_sofka.model.ItemSales;
 import com.zama.reto_sofka.model.Sales;
 import com.zama.reto_sofka.service.SaleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
@@ -26,6 +31,11 @@ public class SalesController {
     }
 
     @PostMapping
+    @Operation(summary = "Registrar una venta")
+    @ApiResponse(responseCode = "200", description = "Venta registrada exitosamente", content = @Content(mediaType = "text/plain", examples = @ExampleObject(value = "Venta registrada exitosamente")))
+    @ApiResponse(responseCode = "400", description = "Error en la solicitud", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{'error': ['La lista de items no puede estar vacía', 'El nombre del item no puede estar vacío', 'La cantidad del item debe ser mayor a cero', 'El precio del item debe ser mayor a cero', 'La ubicación de la tienda no puede estar vacía', 'El cliente no puede ser nulo', 'El género del cliente no puede estar vacío', 'La edad del cliente debe ser mayor a cero', 'El email del cliente no puede estar vacío', 'La satisfacción del cliente debe estar entre 1 y 5', 'El método de compra no puede estar vacío'], 'fecha': '2023-11-13T12:00:00'}")))
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content(mediaType = "text/plain", examples = @ExampleObject(value = "Error al registrar la venta")))
+
     public ResponseEntity<?> registerSales(@RequestBody Sales sales) {
         List<String> errors = new ArrayList<>();
 
@@ -91,8 +101,10 @@ public class SalesController {
     }
 
     @GetMapping("/get-invoices")
-    public List<Sales> getPaginatedInvoices(@RequestParam(defaultValue = "0") int page,
-                                            @RequestParam(defaultValue = "100") int size) {
+    @Operation(summary = "Obtiene las facturas paginadas")
+    public List<Sales> getPaginatedInvoices(
+            @Parameter(description = "Número de página", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Tamaño de la página", example = "100") @RequestParam(defaultValue = "100") int size) {
         return saleService.getPaginatedInvoices(page, size);
     }
 
